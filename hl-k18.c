@@ -432,8 +432,6 @@ draw_directly:
             break;
         }
 
-        delay(REFRESH_DELAY);
-
         clear_numbers_on_leds();
 
         if (!isPositive)
@@ -444,6 +442,8 @@ draw_directly:
         }
 
         show_number_on_cell_on_leds(digit_cell, digits[digit_cell - 1]);
+        
+        delay(REFRESH_DELAY);
     }
 
 }

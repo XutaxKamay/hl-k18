@@ -10,7 +10,7 @@
 
 #define LCD_PROGRAMMING_ERROR_STRING "Programming error..."
 #define SHOW_LCD_PROGRAMMING_ERROR() show_lcd(LCD_PROGRAMMING_ERROR_STRING)
-#define REFRESH_DELAY 50
+#define REFRESH_DELAY 30
 
 /**
  * Columns for HL-K18
