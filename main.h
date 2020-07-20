@@ -8,13 +8,12 @@
 #ifndef MAIN_H
 #define	MAIN_H
 
-
 // PIC18F4520 Configuration Bit Settings
 
 // 'C' source line config statements
 
 // CONFIG1H
-#pragma config OSC = INTIO7     // Oscillator Selection bits (Internal oscillator block, CLKO function on RA6, port function on RA7)
+#pragma config OSC = HS         // Oscillator Selection bits (HS oscillator)
 #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
 #pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
@@ -72,38 +71,16 @@
 // Use project enums instead of #define for ON and OFF.
 
 #include <xc.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <math.h>
 
-/**
- * Columns for HL-K18
- */
-#define BIT_PORTA_OUT_COL8 0b00000010
-#define BIT_PORTA_OUT_COL7 0b00000100
-#define BIT_PORTA_OUT_COL6 0b00001000
-#define BIT_PORTA_OUT_COL5 0b00100000
-#define BIT_PORTE_OUT_COL4 0b00000001
-#define BIT_PORTE_OUT_COL3 0b00000010
-#define BIT_PORTE_OUT_COL2 0b00000100
-#define BIT_PORTC_OUT_COL1 0b00000001
+void delay(uintptr_t delay);
 
-/**
- * Lines for HL-K18
- */
-
-#define BIT_PORTD_OUT_LINE8 0b00000001
-#define BIT_PORTD_OUT_LINE7 0b00000010
-#define BIT_PORTD_OUT_LINE6 0b00000100
-#define BIT_PORTD_OUT_LINE5 0b00001000
-#define BIT_PORTD_OUT_LINE4 0b00010000
-#define BIT_PORTD_OUT_LINE3 0b00100000
-#define BIT_PORTD_OUT_LINE2 0b01000000
-#define BIT_PORTD_OUT_LINE1 0b10000000
-
-/**
- * Speaker for HL-K18
- */
-#define BIT_PORTC_OUT_SPEAKER 0b00000001
-
-
+#include "hl-k18.h"
 
 #endif	/* MAIN_H */
 

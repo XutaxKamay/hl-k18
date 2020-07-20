@@ -7,7 +7,7 @@
 
 #include "main.h"
 
-void delay(unsigned long delay)
+void delay(uintptr_t delay)
 {
     while (delay != 0)
     {
@@ -15,15 +15,43 @@ void delay(unsigned long delay)
     }
 }
 
-void main(void)
+void init_tris(void)
 {
     /**
-     * Set all to output for now
+     * Set first everything to inputs.
      */
-    TRISA = 0b00000000;
-    TRISB = 0b00000000;
-    TRISC = 0b00000000;
-    TRISD = 0b00000000;
-    TRISE = 0b00000000;
+    TRISA = 0xFF;
+    TRISB = 0xFF;
+    TRISC = 0xFF;
+    TRISD = 0xFF;
+    TRISE = 0xFF;
+}
+
+void init_ports(void)
+{
+    LATA = 0x00;
+    LATB = 0x00;
+    LATC = 0x00;
+    LATD = 0x00;
+    LATE = 0x00;
+}
+
+void main(void)
+{
+    init_tris();
+    init_ports();
+
+    /**
+     * Then we set for output for specific bits.
+     */
+
+    init_tris_output_leds();
+
+    int64_t number = 0;
+
+    while (true)
+    {
+        show_number_on_leds_int64(13372258);
+    }
 }
 
