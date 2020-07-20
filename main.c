@@ -51,7 +51,12 @@ void main(void)
 
     while (true)
     {
-        show_number_on_leds_int64(13372258);
+        show_number_on_leds_int64(number);
+        
+        if (number > 9999999)
+            number = 0;
+        
+        number++;
     }
 }
 

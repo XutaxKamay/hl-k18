@@ -401,7 +401,7 @@ void show_number_on_leds_int64(int64_t number)
     
     last_number = number;
 
-    bool isPositive = number > 0;
+    bool isPositive = number >= 0;
 
     if (!isPositive)
     {
