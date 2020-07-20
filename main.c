@@ -48,15 +48,16 @@ void main(void)
     init_tris_output_leds();
 
     int64_t number = 13379500;
+    int64_t waiting_to_increment = 0;
 
     while (true)
     {
-        number++;
+        if (waiting_to_increment % 100 == 0)
+            number++;
 
-        if (number > 99999999)
-            number = 0;
-        
         show_number_on_leds_int64(number);
+
+        waiting_to_increment++;
     }
 }
 
