@@ -50,6 +50,7 @@
 #define MAX_DIGITS 8
 #define IGNORE_DIGIT 0x11
 #define NEGATIVE_CHAR 0x10
+#define DOT_CHAR 0x12
 #define MINIMUM_INT_ON_LEDS -9999999
 #define MAXIMUM_INT_ON_LEDS 99999999
 #define MINIMUM_DOUBLE_ON_LEDS -9999999.0
@@ -62,12 +63,13 @@ void hide_8x8_led_column(int col);
 void show_8x8_led_line(int line);
 void hide_8x8_led_line(int line);
 void clear_8x8_leds(void);
-void show_lcd(const char* msg, ...);
 
 void clear_numbers_on_leds(void);
 void show_number_on_cell_on_leds(int cell_number, int digit);
 void show_number_on_leds_int64(int64_t number);
 void show_number_on_leds_double(double number);
+
+void show_lcd(const char* msg, ...);
 
 #endif	/* HL_K18_H */
 

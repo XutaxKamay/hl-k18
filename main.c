@@ -52,7 +52,7 @@ void main(void)
 
     while (true)
     {
-        if (waiting_to_increment % 30 == 0)
+        if (waiting_to_increment % 10 == 0)
             number++;
 
         show_number_on_leds_int64(number);

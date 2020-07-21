@@ -232,16 +232,6 @@ void clear_8x8_leds(void)
     }
 }
 
-void show_lcd(const char* msg, ...)
-{
-    va_list list;
-    va_start(list, msg);
-
-    printf(msg, list);
-
-    va_end(list);
-}
-
 void clear_numbers_on_leds(void)
 {
     clear_8x8_leds();
@@ -428,7 +418,7 @@ draw_directly:
             digit_cell >= 1;
             digit_cell--)
     {
-        if (digits[digit_cell] == IGNORE_DIGIT)
+        if (digits[digit_cell - 1] == IGNORE_DIGIT)
         {
             break;
         }
@@ -461,4 +451,14 @@ void show_number_on_leds_double(double number)
         show_lcd("Exceeds (num:%f) on leds", number);
         return;
     }
+}
+
+void show_lcd(const char* msg, ...)
+{
+    va_list list;
+    va_start(list, msg);
+
+    printf(msg, list);
+
+    va_end(list);
 }
