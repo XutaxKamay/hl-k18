@@ -442,7 +442,7 @@ draw_directly:
         }
         else
         {
-            show_number_on_cell_on_leds(digit_cell, digits[digit_cell - 1]);
+            show_number_on_cell_on_leds(digit_cell, (int) digits[digit_cell - 1]);
         }
 
         delay(REFRESH_DELAY);
@@ -451,15 +451,12 @@ draw_directly:
 
 void show_number_on_leds_double(double number)
 {
-    static const double minimum = -9999999.0;
-    static const double maximum = 99999999.0;
-
-    if (number < minimum)
+    if (number < MINIMUM_DOUBLE_ON_LEDS)
     {
         show_lcd("Exceeds (num:%f) on leds", number);
         return;
     }
-    else if (number > maximum)
+    else if (number > MAXIMUM_DOUBLE_ON_LEDS)
     {
         show_lcd("Exceeds (num:%f) on leds", number);
         return;

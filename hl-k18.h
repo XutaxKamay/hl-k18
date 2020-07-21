@@ -52,6 +52,8 @@
 #define NEGATIVE_CHAR 0x10
 #define MINIMUM_INT_ON_LEDS -9999999
 #define MAXIMUM_INT_ON_LEDS 99999999
+#define MINIMUM_DOUBLE_ON_LEDS -9999999.0
+#define MAXIMUM_DOUBLE_ON_LEDS 99999999.0
 
 void init_tris_output_leds(void);
 
