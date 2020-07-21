@@ -27,7 +27,7 @@ void init_tris(void)
     TRISE = 0xFF;
 }
 
-void init_ports(void)
+void init_output_ports(void)
 {
     LATA = 0x00;
     LATB = 0x00;
@@ -39,7 +39,7 @@ void init_ports(void)
 void main(void)
 {
     init_tris();
-    init_ports();
+    init_output_ports();
 
     /**
      * Then we set for output for specific bits.
@@ -47,7 +47,7 @@ void main(void)
 
     init_tris_output_leds();
 
-    int64_t number = 13379500;
+    int64_t number = -1339500;
     int64_t waiting_to_increment = 0;
 
     while (true)

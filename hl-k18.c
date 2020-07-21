@@ -373,15 +373,28 @@ void show_number_on_cell_on_leds(int cell_number, char digit)
 
 void show_number_on_leds_int64(int64_t number)
 {
-    static const int max_digits = 8;
+#define MAX_DIGITS 8
+#define IGNORE_DIGIT 0x11
+#define NEGATIVE_CHAR 0x10
+
     static const int64_t minimum = -9999999;
     static const int64_t maximum = 99999999;
     static int64_t last_number = 99999999 + 1;
     int64_t remainder = 0;
-    int64_t cell_number = max_digits;
+    int64_t cell_number = MAX_DIGITS;
     int64_t stop_to_cell_number = 1;
     int64_t divisor = 1;
-    static char digits[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+
+    static char digits[MAX_DIGITS] = {
+        IGNORE_DIGIT,
+        IGNORE_DIGIT,
+        IGNORE_DIGIT,
+        IGNORE_DIGIT,
+        IGNORE_DIGIT,
+        IGNORE_DIGIT,
+        IGNORE_DIGIT,
+        IGNORE_DIGIT
+    };
 
     if (last_number == number)
     {
@@ -398,7 +411,7 @@ void show_number_on_leds_int64(int64_t number)
         show_lcd("Exceeds (num:%i) on leds", number);
         return;
     }
-    
+
     last_number = number;
 
     bool isPositive = number >= 0;
@@ -408,6 +421,8 @@ void show_number_on_leds_int64(int64_t number)
         number = -number;
         stop_to_cell_number = 2;
     }
+
+    *(int64_t*) (&digits) = 0x1111111111111111;
 
     while (cell_number >= stop_to_cell_number && number != 0)
     {
@@ -422,27 +437,34 @@ void show_number_on_leds_int64(int64_t number)
         divisor *= 10;
     }
 
+    // -
+    if (!isPositive)
+    {
+        digits[cell_number - 1] = NEGATIVE_CHAR;
+    }
+
 draw_directly:
-    for (int digit_cell = max_digits;
-            digit_cell >= stop_to_cell_number;
+    for (int digit_cell = MAX_DIGITS;
+            digit_cell >= 1;
             digit_cell--)
     {
-        if (digits[digit_cell] == -1)
+        if (digits[digit_cell] == IGNORE_DIGIT)
         {
             break;
         }
 
         clear_numbers_on_leds();
 
-        if (!isPositive)
+        if (digits[digit_cell - 1] == NEGATIVE_CHAR)
         {
-            // - ???????
             show_8x8_led_column(1);
             show_8x8_led_line(2);
         }
+        else
+        {
+            show_number_on_cell_on_leds(digit_cell, digits[digit_cell - 1]);
+        }
 
-        show_number_on_cell_on_leds(digit_cell, digits[digit_cell - 1]);
-        
         delay(REFRESH_DELAY);
     }
 
