@@ -373,12 +373,12 @@ void show_number_on_leds_int64(int64_t number)
 
     if (number < MINIMUM_INT_ON_LEDS)
     {
-        show_lcd("Exceeds (num:%i) on leds", number);
+        show_lcd("Exceeds (num:%lld) on leds", number);
         return;
     }
     else if (number > MAXIMUM_INT_ON_LEDS)
     {
-        show_lcd("Exceeds (num:%i) on leds", number);
+        show_lcd("Exceeds (num:%lld) on leds", number);
         return;
     }
 
