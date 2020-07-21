@@ -232,7 +232,7 @@ void clear_8x8_leds(void)
     }
 }
 
-void show_lcd(char* msg, ...)
+void show_lcd(const char* msg, ...)
 {
     va_list list;
     va_start(list, msg);
@@ -247,30 +247,16 @@ void clear_numbers_on_leds(void)
     clear_8x8_leds();
 }
 
-void show_number_on_cell_on_leds(int cell_number, char digit)
+void show_number_on_cell_on_leds(int cell_number, int digit)
 {
-    static const char minimum = 0;
-    static const char maximum = 9;
-
-    if (digit < minimum)
+    if (digit < 0)
     {
         show_lcd("Exceeds (cell:%i-digit:%X) on leds", cell_number, digit);
         return;
     }
-    else if (digit > maximum)
+    else if (digit > 9)
     {
         show_lcd("Exceeds (cell:%i-digit:%X) on leds", cell_number, digit);
-        return;
-    }
-
-    if (cell_number < 1)
-    {
-        show_lcd("Exceeds cell %i for leds", cell_number);
-        return;
-    }
-    else if (cell_number > 8)
-    {
-        show_lcd("Exceeds cell %i for leds", cell_number);
         return;
     }
 
@@ -373,19 +359,13 @@ void show_number_on_cell_on_leds(int cell_number, char digit)
 
 void show_number_on_leds_int64(int64_t number)
 {
-#define MAX_DIGITS 8
-#define IGNORE_DIGIT 0x11
-#define NEGATIVE_CHAR 0x10
-
-    static const int64_t minimum = -9999999;
-    static const int64_t maximum = 99999999;
-    static int64_t last_number = 99999999 + 1;
+    static int64_t last_number = MAXIMUM_INT_ON_LEDS + 1;
     int64_t remainder = 0;
     int64_t cell_number = MAX_DIGITS;
     int64_t stop_to_cell_number = 1;
     int64_t divisor = 1;
 
-    static char digits[MAX_DIGITS] = {
+    static unsigned char digits[MAX_DIGITS] = {
         IGNORE_DIGIT,
         IGNORE_DIGIT,
         IGNORE_DIGIT,
@@ -401,12 +381,12 @@ void show_number_on_leds_int64(int64_t number)
         goto draw_directly;
     }
 
-    if (number < minimum)
+    if (number < MINIMUM_INT_ON_LEDS)
     {
         show_lcd("Exceeds (num:%i) on leds", number);
         return;
     }
-    else if (number > maximum)
+    else if (number > MAXIMUM_INT_ON_LEDS)
     {
         show_lcd("Exceeds (num:%i) on leds", number);
         return;
@@ -422,13 +402,13 @@ void show_number_on_leds_int64(int64_t number)
         stop_to_cell_number = 2;
     }
 
-    *(int64_t*) (&digits) = 0x1111111111111111;
+    *(int64_t*) (digits) = 0x1111111111111111;
 
     while (cell_number >= stop_to_cell_number && number != 0)
     {
         remainder = number % (divisor * 10);
 
-        digits[cell_number - 1] = (char) (remainder / divisor);
+        digits[cell_number - 1] = (unsigned char) (remainder / divisor);
 
         number -= remainder;
 
@@ -467,7 +447,6 @@ draw_directly:
 
         delay(REFRESH_DELAY);
     }
-
 }
 
 void show_number_on_leds_double(double number)

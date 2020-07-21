@@ -9,7 +9,9 @@
 #define	HL_K18_H
 
 #define LCD_PROGRAMMING_ERROR_STRING "Programming error..."
-#define SHOW_LCD_PROGRAMMING_ERROR() show_lcd(LCD_PROGRAMMING_ERROR_STRING)
+#define SHOW_LCD_PROGRAMMING_ERROR() show_lcd(LCD_PROGRAMMING_ERROR_STRING); \
+                                     exit(0);
+
 #define REFRESH_DELAY 300
 
 /**
@@ -42,6 +44,15 @@
  */
 #define BIT_PORTC_OUT_SPEAKER (1 << 1)
 
+/**
+ * Leds stuffs
+ */
+#define MAX_DIGITS 8
+#define IGNORE_DIGIT 0x11
+#define NEGATIVE_CHAR 0x10
+#define MINIMUM_INT_ON_LEDS -9999999
+#define MAXIMUM_INT_ON_LEDS 99999999
+
 void init_tris_output_leds(void);
 
 void show_8x8_led_column(int col);
@@ -49,10 +60,10 @@ void hide_8x8_led_column(int col);
 void show_8x8_led_line(int line);
 void hide_8x8_led_line(int line);
 void clear_8x8_leds(void);
-void show_lcd(char* msg, ...);
+void show_lcd(const char* msg, ...);
 
 void clear_numbers_on_leds(void);
-void show_number_on_cell_on_leds(int cell_number, char digit);
+void show_number_on_cell_on_leds(int cell_number, int digit);
 void show_number_on_leds_int64(int64_t number);
 void show_number_on_leds_double(double number);
 
