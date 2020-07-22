@@ -399,11 +399,11 @@ void show_number_on_leds_int64(int64_t number)
     {
         remainder = number % (divisor * 10);
 
-        digits[cell_number - 1] = (unsigned char) (remainder / divisor);
+        cell_number--;
+
+        digits[cell_number] = (unsigned char) (remainder / divisor);
 
         number -= remainder;
-
-        cell_number--;
 
         divisor *= 10;
     }
@@ -504,22 +504,31 @@ void show_number_on_leds_double(double number)
     }
     else
     {
-        *(int*)(&digits[cell_number - 2]) = 0;
+        *(int*) (&digits[cell_number - 2]) = 0;
     }
 
     cell_number -= 2;
 
-    while (cell_number >= stop_to_cell_number && whole_number != 0)
+    if (whole_number != 0)
     {
-        remainder = whole_number % (divisor * 10);
 
-        digits[cell_number - 1] = (unsigned char) (remainder / divisor);
+        while (cell_number >= stop_to_cell_number && whole_number != 0)
+        {
+            remainder = whole_number % (divisor * 10);
 
-        whole_number -= remainder;
+            cell_number--;
 
+            digits[cell_number] = (unsigned char) (remainder / divisor);
+
+            whole_number -= remainder;
+
+            divisor *= 10;
+        }
+    }
+    else
+    {
         cell_number--;
-
-        divisor *= 10;
+        digits[cell_number] = 0;
     }
 
     // -

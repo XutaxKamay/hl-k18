@@ -52,8 +52,8 @@ void main(void)
 
     while (true)
     {
-        if (waiting_to_increment % 5 == 0)
-            number += 1.0;
+        if (waiting_to_increment % 25 == 0)
+            number += 0.15;
 
         show_number_on_leds_double(number);
 
