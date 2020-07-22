@@ -38,7 +38,7 @@ void init_output_ports(void)
 
 void main(void)
 {
-    double number = -15.01;
+    double number = -15.0;
     uint64_t waiting_to_increment = 0;
 
     init_tris();
@@ -53,7 +53,7 @@ void main(void)
     while (true)
     {
         if (waiting_to_increment % 5 == 0)
-            number += 0.14;
+            number += 1.0;
 
         show_number_on_leds_double(number);
 

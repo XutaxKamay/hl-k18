@@ -504,8 +504,7 @@ void show_number_on_leds_double(double number)
     }
     else
     {
-        digits[cell_number - 1] = 0;
-        digits[cell_number - 2] = 0;
+        *(int*)(&digits[cell_number - 2]) = 0;
     }
 
     cell_number -= 2;
