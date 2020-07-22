@@ -408,7 +408,6 @@ void show_number_on_leds_int64(int64_t number)
         divisor *= 10;
     }
 
-    // -
     if (!is_positive)
     {
         digits[cell_number - 1] = NEGATIVE_CHAR;
@@ -442,8 +441,7 @@ draw_directly:
 
 void show_number_on_leds_double(double number)
 {
-    int64_t whole_number, decimal;
-
+    int64_t whole_number, decimals;
     static double last_number = MAXIMUM_DOUBLE_ON_LEDS + 1.0;
     int64_t remainder = 0;
     int64_t cell_number = MAX_DIGITS;
@@ -493,14 +491,20 @@ void show_number_on_leds_double(double number)
     /**
      * We want a precision of 2
      */
-    decimal = (int64_t) ((number - (double) whole_number) * 100.0);
+    decimals = (int64_t) ((number - (double) whole_number) * 100.0);
 
     *(int64_t*) (digits) = 0x1111111111111111;
 
-    if (decimal != 0)
+    if (decimals != 0)
     {
-        digits[cell_number - 1] = decimal % 10;
-        digits[cell_number - 2] = decimal / 10;
+        /**
+         * ?X ex: 98 % 10 -> 8
+         */
+        digits[cell_number - 1] = decimals % 10;
+        /**
+         * X? ex: 98 / 10 -> 9
+         */
+        digits[cell_number - 2] = decimals / 10;
     }
     else
     {
@@ -511,7 +515,6 @@ void show_number_on_leds_double(double number)
 
     if (whole_number != 0)
     {
-
         while (cell_number >= stop_to_cell_number && whole_number != 0)
         {
             remainder = whole_number % (divisor * 10);
@@ -531,7 +534,6 @@ void show_number_on_leds_double(double number)
         digits[cell_number] = 0;
     }
 
-    // -
     if (!is_positive)
     {
         digits[cell_number - 1] = NEGATIVE_CHAR;
@@ -549,7 +551,9 @@ draw_directly:
 
         clear_numbers_on_leds();
 
-        // dot
+        /**
+         * This is the dot for the double/float values.
+         */
         if (digit_cell == 6)
         {
             show_8x8_led_column(6);
@@ -572,6 +576,9 @@ draw_directly:
 
 void show_lcd(const char* msg, ...)
 {
+    /**
+     * TODO:...
+     */
     va_list list;
     va_start(list, msg);
 
