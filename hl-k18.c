@@ -711,8 +711,17 @@ void wait_for_ready_lcd1602(void)
 
     WRITE_LCD1602_RS = false;
     WRITE_LCD1602_RW = true;
+    
+    /*
+     * Enable Port is enabled before checking if Busy Flag is on
+     */
+    
     WRITE_LCD1602_EN = true;
 
+    /*
+     * Wait for the Busy Flag
+     */
+    
     while (READ_LCD1602_BF);
 
     /*
@@ -720,6 +729,9 @@ void wait_for_ready_lcd1602(void)
      */
 
     TRIS_LCD1602_BF = 0;
+    /*
+     * Don't forget it set it back to false
+     */
     WRITE_LCD1602_EN = false;
 }
 
@@ -735,25 +747,28 @@ void pulse_lcd1602(bool RW, bool RS, uint8_t data)
     TRIS_LCD1602_BF = 0;
     TRIS_LCD1602_DATA = 0x00;
 
+    /*
+     * Set Register Select & Read or Write bit ports
+     */
     WRITE_LCD1602_RS = RS;
     WRITE_LCD1602_RW = RW;
     WRITE_DATA_LCD1602 = data;
 
-
     /*
-     * See the documentation for LCD1602 for the meaning of
-     * RS, RW, EN, BF...(RS is Register Select, RW is Read/Write, 
-     * EN is for enable signal, BF is Busy Flag)
-     * Once we have set all the flags, we can start pulsing with E/EN
+     * Let's pulsate now.
      */
-
     WRITE_LCD1602_EN = true;
 
-    __delay_ms(PULSE_DURATION_MS_FOR_EN);
+    __delay_ms(PULSE_DURATION_MS_FOR_LCD1602);
 
     WRITE_LCD1602_EN = false;
 
-    __delay_ms(PULSE_DURATION_MS_FOR_EN);
+    __delay_ms(PULSE_DURATION_MS_FOR_LCD1602);
+    
+    /*
+     * Ok we've done the request to the LCD at this point,
+     * let's wait for the busy flag now.
+     */
 
     wait_for_ready_lcd1602();
 }

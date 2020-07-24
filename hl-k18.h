@@ -60,6 +60,10 @@
  * DDRAM stands for Display Data RAM
  * CGRAM stands for Character Generator RAM
  * D0-D7 are used to write data to the DDRAM.
+ * See the documentation for LCD1602 for the meaning of
+ * RS, RW, EN, BF...(RS is Register Select, RW is Read/Write, 
+ * EN is for enable signal, BF is Busy Flag)
+ * Once we have set all the flags, we can start pulsing with E/EN
  * ******************************************
  */
 
@@ -111,7 +115,7 @@
 /*
  * Usually it shouldn't take more than 2 milliseconds.
  */
-#define PULSE_DURATION_MS_FOR_EN 2
+#define PULSE_DURATION_MS_FOR_LCD1602 2
 
 /**
  * LCD1602 Instructions
