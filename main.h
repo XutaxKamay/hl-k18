@@ -70,6 +70,8 @@
 // #pragma config statements should precede project file includes.
 // Use project enums instead of #define for ON and OFF.
 
+#define _XTAL_FREQ 10000000UL
+
 #include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>

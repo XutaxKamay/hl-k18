@@ -18,13 +18,13 @@ void delay(uintptr_t delay)
 void init_tris(void)
 {
     /**
-     * Set first everything to inputs.
+     * Set first everything to outputs.
      */
-    TRISA = 0xFF;
-    TRISB = 0xFF;
-    TRISC = 0xFF;
-    TRISD = 0xFF;
-    TRISE = 0xFF;
+    TRISA = 0x00;
+    TRISB = 0x00;
+    TRISC = 0x00;
+    TRISD = 0x00;
+    TRISE = 0x00;
 }
 
 void init_output_ports(void)
@@ -38,27 +38,9 @@ void init_output_ports(void)
 
 void main(void)
 {
-    double number = -15.0;
-    uint64_t waiting_to_increment = 0;
-
     init_tris();
     init_output_ports();
-
-    /**
-     * Then we set for output for specific bits.
-     */
-
-    init_tris_output_leds();
-
-    while (true)
-    {
-        if (waiting_to_increment % 25 == 0)
-            number += 0.15;
-
-        show_number_on_leds_double(number);
-
-        waiting_to_increment++;
-    }
-
+    
+    init_lcd1602();
 }
 
