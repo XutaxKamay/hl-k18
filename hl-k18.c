@@ -594,8 +594,8 @@ uint8_t generate_lcd1602_entry_set_mode(bool *RS,
     *RS = false;
     *RW = false;
 
-    result |= (1 << 1) & shift_cursor_left_or_right;
-    result |= (1 << 0) & shift_cursor;
+    result |= shift_cursor_left_or_right ? (1 << 1) : 0;
+    result |= shift_cursor ? (1 << 0) : 0;
 
     return result;
 }
@@ -608,10 +608,10 @@ uint8_t generate_lcd1602_display_control_cmd(bool *RS,
     *RS = false;
     *RW = false;
 
-    result |= (1 << 2) & display_visible;
-    result |= (1 << 1) & cursor_visible;
-    result |= (1 << 0) & cursor_blink;
-
+    result |= display_visible ? (1 << 2) : 0;
+    result |= cursor_visible ? (1 << 1) : 0;
+    result |= cursor_blink ? (1 << 0) : 0;
+    
     return result;
 }
 
@@ -623,8 +623,8 @@ uint8_t generate_lcd1602_display_shift(bool *RS,
     *RS = false;
     *RW = false;
 
-    result |= (1 << 3) & shift_cursor_or_display;
-    result |= (1 << 2) & shift_left_or_right;
+    result |= shift_cursor_or_display ? (1 << 3) : 0;
+    result |= shift_left_or_right ? (1 << 2) : 0;
 
     return result;
 }
@@ -638,9 +638,9 @@ uint8_t generate_lcd1602_function_set_cmd(bool *RS,
     *RS = false;
     *RW = false;
 
-    result |= (1 << 4) & interface_4_or_8_bits;
-    result |= (1 << 3) & lines_1_or_2;
-    result |= (1 << 2) & matrix_5x8_or_5x11;
+    result |= interface_4_or_8_bits ? (1 << 4) : 0;
+    result |= lines_1_or_2 ? (1 << 3) : 0;
+    result |= matrix_5x8_or_5x11 ? (1 << 2) : 0;
 
     return result;
 }
@@ -703,11 +703,83 @@ uint8_t generate_lcd1602_read_cgram_or_ddram(bool *RS,
 
 void wait_for_ready_lcd1602(void)
 {
+    /*
+     * Set D7 as input
+     */
 
+    TRIS_LCD1602_BF = 1;
+
+    WRITE_LCD1602_RS = false;
+    WRITE_LCD1602_RW = true;
+    WRITE_LCD1602_EN = true;
+
+    while (READ_LCD1602_BF);
+
+    /*
+     * Set D7 as output
+     */
+
+    TRIS_LCD1602_BF = 0;
+    WRITE_LCD1602_EN = false;
+}
+
+void pulse_lcd1602(bool RW, bool RS, uint8_t data)
+{
+    /*
+     * Init TRIS (as outputs)
+     */
+
+    TRIS_LCD1602_RS = 0;
+    TRIS_LCD1602_RW = 0;
+    TRIS_LCD1602_EN = 0;
+    TRIS_LCD1602_BF = 0;
+    TRIS_LCD1602_DATA = 0x00;
+
+    WRITE_LCD1602_RS = RS;
+    WRITE_LCD1602_RW = RW;
+    WRITE_DATA_LCD1602 = data;
+
+
+    /*
+     * See the documentation for LCD1602 for the meaning of
+     * RS, RW, EN, BF...(RS is Register Select, RW is Read/Write, 
+     * EN is for enable signal, BF is Busy Flag)
+     * Once we have set all the flags, we can start pulsing with E/EN
+     */
+
+    WRITE_LCD1602_EN = true;
+
+    __delay_ms(PULSE_DURATION_MS_FOR_EN);
+
+    WRITE_LCD1602_EN = false;
+
+    __delay_ms(PULSE_DURATION_MS_FOR_EN);
+
+    wait_for_ready_lcd1602();
 }
 
 void init_lcd1602(void)
 {
+    bool RS, RW;
+    uint8_t data;
+
+    /*
+     * Wait a bit for its initialization.
+     */
+    __delay_ms(100);
+
+    data = generate_lcd1602_function_set_cmd(&RS, &RW, true, true, false);
+
+    pulse_lcd1602(RS, RW, data);
+
+    data = generate_lcd1602_display_control_cmd(&RS, &RW, true, false, false);
+
+    pulse_lcd1602(RS, RW, data);
+
+    data = generate_lcd1602_clear_display_cmd(&RS, &RW);
+
+    pulse_lcd1602(RS, RW, data);
+
 }
 
 void show_lcd1602(const char* msg, ...)

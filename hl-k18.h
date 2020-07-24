@@ -71,6 +71,10 @@
 #define READ_LCD1602_RW PORTAbits.RA3
 #define READ_LCD1602_EN PORTAbits.RA5
 
+#define TRIS_LCD1602_RS TRISAbits.RA2
+#define TRIS_LCD1602_RW TRISAbits.RA3
+#define TRIS_LCD1602_EN TRISAbits.RA5
+
 /**
  * LCD1602
  * D0-D7
@@ -95,8 +99,19 @@
 #define READ_LCD1602_D7 PORTDbits.RD7
 #define READ_LCD1602_BF READ_LCD1602_D7
 
-#define WRITE_LCD1602_PORTD_bits LATD
-#define READ_LCD1602_PORTD_bits PORTD
+/*
+ * BF is also D7 used for data, so it's both an input and output
+ */
+#define TRIS_LCD1602_BF TRISDbits.RD7
+
+#define TRIS_LCD1602_DATA TRISD
+#define WRITE_DATA_LCD1602 LATD
+#define READ_DATA_LCD1602 PORTD
+
+/*
+ * Usually it shouldn't take more than 2 milliseconds.
+ */
+#define PULSE_DURATION_MS_FOR_EN 2
 
 /**
  * LCD1602 Instructions
@@ -207,6 +222,9 @@ uint8_t generate_lcd1602_write_cgram_or_ddram(bool *RS,
 uint8_t generate_lcd1602_read_cgram_or_ddram(bool *RS,
         bool *RW, uint8_t D);
 
+void init_lcd1602(void);
+void show_lcd1602(const char* msg, ...);
+
 void init_output_tris_leds(void);
 
 void show_8x8_led_column(int col);
@@ -219,9 +237,6 @@ void clear_numbers_on_leds(void);
 void show_number_on_cell_on_leds(int cell_number, int digit);
 void show_number_on_leds_int64(int64_t number);
 void show_number_on_leds_double(double number);
-
-void init_lcd1602(void);
-void show_lcd1602(const char* msg, ...);
 
 #endif	/* HL_K18_H */
 
