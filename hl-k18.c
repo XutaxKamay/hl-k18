@@ -483,6 +483,7 @@ void show_number_on_leds_double(double number)
     /**
      * We want a precision of 2
      */
+
     decimals = (int64_t) ((number - (double) whole_number) * 100.0);
 
     *(int64_t*) (digits) = 0x1111111111111111;
@@ -492,10 +493,13 @@ void show_number_on_leds_double(double number)
         /**
          * ?X ex: 98 % 10 -> 8
          */
+
         digits[cell_number - 1] = decimals % 10;
+
         /**
          * X? ex: 98 / 10 -> 9
          */
+
         digits[cell_number - 2] = decimals / 10;
     }
     else
@@ -548,6 +552,7 @@ draw_directly:
         /**
          * This is the dot for the double/float values.
          */
+
         if (digit_cell == 6)
         {
             show_8x8_led_column(6);
@@ -611,7 +616,7 @@ uint8_t generate_lcd1602_display_control_cmd(bool *RS,
     result |= display_visible ? (1 << 2) : 0;
     result |= cursor_visible ? (1 << 1) : 0;
     result |= cursor_blink ? (1 << 0) : 0;
-    
+
     return result;
 }
 
@@ -711,17 +716,17 @@ void wait_for_ready_lcd1602(void)
 
     WRITE_LCD1602_RS = false;
     WRITE_LCD1602_RW = true;
-    
+
     /*
      * Enable Port is enabled before checking if Busy Flag is on
      */
-    
+
     WRITE_LCD1602_EN = true;
 
     /*
      * Wait for the Busy Flag
      */
-    
+
     while (READ_LCD1602_BF);
 
     /*
@@ -729,13 +734,15 @@ void wait_for_ready_lcd1602(void)
      */
 
     TRIS_LCD1602_BF = 0;
+
     /*
      * Don't forget it set it back to false
      */
+
     WRITE_LCD1602_EN = false;
 }
 
-void pulse_lcd1602(bool RW, bool RS, uint8_t data)
+void pulse_lcd1602(bool RS, bool RW, uint8_t data)
 {
     /*
      * Init TRIS (as outputs)
@@ -750,6 +757,7 @@ void pulse_lcd1602(bool RW, bool RS, uint8_t data)
     /*
      * Set Register Select & Read or Write bit ports
      */
+
     WRITE_LCD1602_RS = RS;
     WRITE_LCD1602_RW = RW;
     WRITE_DATA_LCD1602 = data;
@@ -757,6 +765,7 @@ void pulse_lcd1602(bool RW, bool RS, uint8_t data)
     /*
      * Let's pulsate now.
      */
+
     WRITE_LCD1602_EN = true;
 
     __delay_ms(PULSE_DURATION_MS_FOR_LCD1602);
@@ -764,7 +773,7 @@ void pulse_lcd1602(bool RW, bool RS, uint8_t data)
     WRITE_LCD1602_EN = false;
 
     __delay_ms(PULSE_DURATION_MS_FOR_LCD1602);
-    
+
     /*
      * Ok we've done the request to the LCD at this point,
      * let's wait for the busy flag now.
@@ -781,32 +790,81 @@ void init_lcd1602(void)
     /*
      * Wait a bit for its initialization.
      */
+
     __delay_ms(100);
 
     data = generate_lcd1602_function_set_cmd(&RS, &RW, true, true, false);
 
     pulse_lcd1602(RS, RW, data);
 
-    data = generate_lcd1602_display_control_cmd(&RS, &RW, true, false, false);
+    data = generate_lcd1602_display_control_cmd(&RS,
+            &RW, true, false, false);
 
     pulse_lcd1602(RS, RW, data);
 
     data = generate_lcd1602_clear_display_cmd(&RS, &RW);
 
     pulse_lcd1602(RS, RW, data);
-
 }
 
-void show_lcd1602(const char* msg, ...)
+void write_to_lcd1602(const char* msg)
+{
+    bool RS, RW;
+    uint8_t data;
+    int i;
+    int strlength = strlen(msg);
+
+    /*
+     * Clear display
+     */
+
+    data = generate_lcd1602_clear_display_cmd(&RS, &RW);
+
+    pulse_lcd1602(RS, RW, data);
+
+    if (strlength > MAX_CHARACTERS_LCD1602)
+    {
+        strlength = MAX_CHARACTERS_LCD1602;
+    }
+
+    /*
+     * Write first line on DDRAM
+     */
+
+    for (i = 0; i < strlength; i++)
+    {
+        /*
+         * Set cursor on next line
+         * Basically, addresses on first line goes to 0x00 to 0x10
+         * Second lines goes to 0x40 to 0x4F
+         */
+
+        if (i == MAX_CHARACTERS_LCD1602 / 2)
+        {
+            data = generate_lcd1602_set_ddram_address(&RS, &RW, 
+                    ADDRESS_TO_NEXT_LINE_LCD1602);
+            pulse_lcd1602(RS, RW, data);
+        }
+
+        data = generate_lcd1602_write_cgram_or_ddram(&RS, &RW, msg[i]);
+
+        pulse_lcd1602(RS, RW, data);
+    }
+}
+
+void show_lcd1602(const char* fmt, ...)
 {
     /**
      * 2 lines 6 characters
      */
-    char buffer[2 * 16];
-    va_list list;
-    va_start(list, msg);
 
-    vsnprintf(buffer, sizeof (buffer), msg, list);
+    char buffer[MAX_CHARACTERS_LCD1602];
+    va_list args;
+    va_start(args, fmt);
 
-    va_end(list);
+    vsnprintf(buffer, MAX_CHARACTERS_LCD1602, fmt, args);
+
+    write_to_lcd1602(buffer);
+
+    va_end(args);
 }

@@ -116,6 +116,8 @@
  * Usually it shouldn't take more than 2 milliseconds.
  */
 #define PULSE_DURATION_MS_FOR_LCD1602 2
+#define MAX_CHARACTERS_LCD1602 32
+#define ADDRESS_TO_NEXT_LINE_LCD1602 0x40
 
 /**
  * LCD1602 Instructions
@@ -227,7 +229,8 @@ uint8_t generate_lcd1602_read_cgram_or_ddram(bool *RS,
         bool *RW, uint8_t D);
 
 void init_lcd1602(void);
-void show_lcd1602(const char* msg, ...);
+void write_to_lcd1602(const char* msg);
+void show_lcd1602(const char* fmt, ...);
 
 void init_output_tris_leds(void);
 
