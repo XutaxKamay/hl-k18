@@ -822,6 +822,14 @@ void write_to_lcd1602(const char* msg)
 
     pulse_lcd1602(RS, RW, data);
 
+    /*
+     * Be sure that we've set the address to Display Data RAM
+     */
+
+    data = generate_lcd1602_set_ddram_address(&RS, &RW, 0);
+
+    pulse_lcd1602(RS, RW, data);
+
     if (strlength > MAX_CHARACTERS_LCD1602)
     {
         strlength = MAX_CHARACTERS_LCD1602;
@@ -841,7 +849,7 @@ void write_to_lcd1602(const char* msg)
 
         if (i == MAX_CHARACTERS_LCD1602 / 2)
         {
-            data = generate_lcd1602_set_ddram_address(&RS, &RW, 
+            data = generate_lcd1602_set_ddram_address(&RS, &RW,
                     ADDRESS_TO_NEXT_LINE_LCD1602);
             pulse_lcd1602(RS, RW, data);
         }
