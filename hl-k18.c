@@ -813,22 +813,7 @@ void write_to_lcd1602(const char* msg)
     uint8_t data;
     int i;
     int strlength = strlen(msg);
-
-    /*
-     * Clear display
-     */
-
-    data = generate_lcd1602_clear_display_cmd(&RS, &RW);
-
-    pulse_lcd1602(RS, RW, data);
-
-    /*
-     * Be sure that we've set the address to Display Data RAM
-     */
-
-    data = generate_lcd1602_set_ddram_address(&RS, &RW, 0);
-
-    pulse_lcd1602(RS, RW, data);
+    static char last_msg[MAX_CHARACTERS_LCD1602];
 
     if (strlength > MAX_CHARACTERS_LCD1602)
     {
@@ -842,15 +827,34 @@ void write_to_lcd1602(const char* msg)
     for (i = 0; i < strlength; i++)
     {
         /*
+         * Don't need to write again that character if it has been already
+         * written
+         */
+
+        if (last_msg[i] == msg[i])
+        {
+            continue;
+        }
+
+        /*
          * Set cursor on next line
          * Basically, addresses on first line goes to 0x00 to 0x10
          * Second lines goes to 0x40 to 0x4F
          */
 
-        if (i == MAX_CHARACTERS_LCD1602 / 2)
+        if (i >= MAX_CHARACTERS_LCD1602 / 2)
         {
             data = generate_lcd1602_set_ddram_address(&RS, &RW,
-                    ADDRESS_TO_NEXT_LINE_LCD1602);
+                    ADDRESS_TO_NEXT_LINE_LCD1602
+                    + (i - (MAX_CHARACTERS_LCD1602 / 2)));
+            
+            pulse_lcd1602(RS, RW, data);
+        }
+        else
+        {
+
+            data = generate_lcd1602_set_ddram_address(&RS, &RW, i);
+            
             pulse_lcd1602(RS, RW, data);
         }
 
@@ -858,6 +862,12 @@ void write_to_lcd1602(const char* msg)
 
         pulse_lcd1602(RS, RW, data);
     }
+
+    /*
+     * Don't need null character
+     */
+    memcpy(last_msg, msg, strlength);
+
 }
 
 void show_lcd1602(const char* fmt, ...)

@@ -119,6 +119,19 @@
 #define MAX_CHARACTERS_LCD1602 32
 #define ADDRESS_TO_NEXT_LINE_LCD1602 0x40
 
+/*
+ * USB stuffs
+ */
+
+#define TRIS_USB_TX TRISCbits.RC6
+#define TRIS_USB_RX TRISCbits.RC7
+
+#define READ_USB_TX PORTCbits.RC6
+#define READ_USB_RX PORTCbits.RC7
+
+#define WRITE_USB_TX LATCbits.LATC6
+#define WRITE_USB_RX LATCbits.LATC7
+
 /**
  * LCD1602 Instructions
  */

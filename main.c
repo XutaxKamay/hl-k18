@@ -23,11 +23,6 @@ void main(void)
 
     while (true)
     {
-        show_lcd1602("%i", number);
-
-        __delay_ms(50);
-
-        number++;
     }
 }
 
